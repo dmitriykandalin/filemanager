@@ -6,13 +6,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
@@ -21,6 +23,10 @@ public class MainActivity extends Activity {
     private File currentDirectory = new File("/");
     private TextView headerTextView;
     private ListView listView;
+
+    // имена атрибутов для Map
+    final String ATTRIBUTE_NAME_TEXT = "text";
+    final String ATTRIBUTE_NAME_IMAGE = "image";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +68,32 @@ public class MainActivity extends Activity {
         for (File file : files) {
             this.directoryEntries.add(file.getAbsolutePath());
         }
+        /*
         //create array adapter to show everything
-        ArrayAdapter<String> directoryList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, this.directoryEntries);
+        ArrayAdapter<String> directoryList = new ArrayAdapter<String>(this, R.layout.my_list_item_layout, this.directoryEntries);
         this.listView.setAdapter(directoryList);
+        */
+
+        //create simple adapter to show everything
+
+        // упаковываем данные в понятную для адаптера структуру
+        ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>(
+                directoryEntries.size());
+        Map<String, Object> m;
+        for (int i = 0; i < directoryEntries.size(); i++) {
+            m = new HashMap<String, Object>();
+            m.put(ATTRIBUTE_NAME_TEXT, directoryEntries.toArray()[i]);
+            m.put(ATTRIBUTE_NAME_IMAGE, R.drawable.littlefolder);
+            data.add(m);
+        }
+
+        // массив имен атрибутов, из которых будут читаться данные
+        String[] from = { ATTRIBUTE_NAME_TEXT, ATTRIBUTE_NAME_IMAGE };
+        // массив ID View-компонентов, в которые будут вставлять данные
+        int[] to = { R.id.tvText, R.id.ivImg };
+        // create addapter
+        SimpleAdapter mySimpleAdapter = new SimpleAdapter(this, data, R.layout.my_list_item_layout, from, to);
+        this.listView.setAdapter(mySimpleAdapter);
     }
 
 
